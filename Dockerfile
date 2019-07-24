@@ -11,7 +11,7 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
 
 
-RUN pip3 install aws-cli
+RUN pip3 install awscli
 
 RUN wget https://releases.hashicorp.com/terraform/0.12.3/terraform_0.12.3_linux_amd64.zip
 RUN unzip terraform_*.zip
