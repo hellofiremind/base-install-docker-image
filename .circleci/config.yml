@@ -1,0 +1,22 @@
+version: 2.0
+jobs:
+  build:
+    machine:
+      enabled: true
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - run:
+          name: Build Image
+          command: docker build -t firemindltd/base-install-docker-image:latest .
+      - run:
+          name: Push
+          command: docker push firemindltd/base-install-docker-image:latest
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
