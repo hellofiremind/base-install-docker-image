@@ -12,6 +12,8 @@ RUN apt-get install -y nodejs
 
 
 RUN pip3 install awscli
+ENV AWS_PROFILE default
+
 
 RUN wget https://releases.hashicorp.com/terraform/0.12.3/terraform_0.12.3_linux_amd64.zip
 RUN unzip terraform_*.zip
