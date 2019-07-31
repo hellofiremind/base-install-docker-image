@@ -31,7 +31,6 @@ RUN unzip terraform_*.zip
 RUN mv terraform /usr/local/bin
 RUN rm terraform_*.zip
 
-
 ENV AWS_PROFILE default
 
 CMD ["/bin/bash"]
