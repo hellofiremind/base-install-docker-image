@@ -5,7 +5,7 @@ MAINTAINER Charles Gillham charles.gillham@firemind.io
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y
-RUN apt-get install -y gnupg2 software-properties-common wget unzip curl build-essential gcc g++ make apt-transport-https ca-certificates curl gnupg-agent software-properties-common imagemagick libjpeg62
+RUN apt-get install -y gnupg2 software-properties-common wget unzip curl build-essential gcc g++ make apt-transport-https ca-certificates curl gnupg-agent software-properties-common imagemagick
 
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
@@ -23,6 +23,7 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
 
+RUN yum install libjpeg62 libjpeg62-dev
 
 RUN pip3 install awscli
 
