@@ -23,7 +23,7 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
 
-RUN yum install libjpeg62 libjpeg62-dev
+RUN apt-get install libjpeg62 libjpeg62-dev
 
 RUN pip3 install awscli
 
