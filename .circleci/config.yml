@@ -19,6 +19,11 @@ jobs:
           command: |
                 echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
                 docker push firemindltd/base-install-docker-image:latest
+      - run:
+          name: Push
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker push firemindltd/base-install-docker-image-browser:latest
 
 workflows:
   version: 2
