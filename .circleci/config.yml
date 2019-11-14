@@ -11,6 +11,9 @@ jobs:
       - run:
           name: Build Image
           command: docker build -t firemindltd/base-install-docker-image:latest .
+     - run:
+          name: Build Browser Image
+          command: docker build -t firemindltd/base-install-docker-image-browser:latest ./browser
       - run:
           name: Push
           command: |
