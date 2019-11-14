@@ -1,6 +1,6 @@
 version: 2.0
 jobs:
-  build:
+  buildMainImage:
     machine:
       enabled: true
     shell: /bin/bash
@@ -9,8 +9,32 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Pull previous image
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker pull firemindltd/base-install-docker-image:latest || true
+      - run:
           name: Build Image
           command: docker build -t firemindltd/base-install-docker-image:latest .
+      - run:
+          name: Push
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker push firemindltd/base-install-docker-image:latest
+
+  buildBrowserImage:
+    machine:
+      enabled: true
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - run:
+          name: Pull previous image
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker pull firemindltd/base-install-docker-image-browser:latest || true
       - run:
           name: Build Browser Image
           command: docker build -t firemindltd/base-install-docker-image-browser:latest ./browser
@@ -18,15 +42,14 @@ jobs:
           name: Push
           command: |
                 echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-                docker push firemindltd/base-install-docker-image:latest
-      - run:
-          name: Push
-          command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
                 docker push firemindltd/base-install-docker-image-browser:latest
+
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build
+      - buildMainImage
+      - buildBrowserImage
+          requires:
+            - buildMainImage
