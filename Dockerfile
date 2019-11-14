@@ -27,7 +27,7 @@ RUN apt-get install -y libjpeg62 libjpeg62-dev
 
 RUN pip3 install awscli
 
-RUN wget https://releases.hashicorp.com/terraform/0.12.9/terraform_0.12.9_linux_amd64.zip
+RUN wget https://releases.hashicorp.com/terraform/0.12.14/terraform_0.12.14_linux_amd64.zip
 RUN unzip terraform_*.zip
 RUN mv terraform /usr/local/bin
 RUN rm terraform_*.zip
