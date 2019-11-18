@@ -137,9 +137,9 @@ workflows:
   commit:
     jobs:
       - buildBaseImage:
-        filters:
-          branches:
-            only: master
+          filters:
+            branches:
+              only: master
       - buildBrowserImage:
           requires:
             - buildBaseImage
