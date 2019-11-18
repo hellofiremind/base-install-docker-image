@@ -1,6 +1,6 @@
 version: 2.0
 jobs:
-  buildMainImage:
+  buildBaseImage:
     machine:
       enabled: true
     shell: /bin/bash
@@ -12,15 +12,15 @@ jobs:
           name: Pull previous image
           command: |
                 echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-                docker pull firemindltd/base-install-docker-image:latest || true
+                docker pull firemindltd/base-install-docker-image-base:latest || true
       - run:
           name: Build Image
-          command: docker build -t firemindltd/base-install-docker-image:latest .
+          command: docker build -t firemindltd/base-install-docker-image-base:latest ./Base
       - run:
           name: Push
           command: |
                 echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-                docker push firemindltd/base-install-docker-image:latest
+                docker push firemindltd/base-install-docker-image-base:latest
 
   buildBrowserImage:
     machine:
@@ -37,19 +37,143 @@ jobs:
                 docker pull firemindltd/base-install-docker-image-browser:latest || true
       - run:
           name: Build Browser Image
-          command: docker build -t firemindltd/base-install-docker-image-browser:latest ./browser
+          command: docker build -t firemindltd/base-install-docker-image-browser:latest ./Browser
       - run:
           name: Push
           command: |
                 echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
                 docker push firemindltd/base-install-docker-image-browser:latest
 
+  buildMainImage:
+    machine:
+      enabled: true
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - run:
+          name: Pull previous image
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker pull firemindltd/base-install-docker-image:latest || true
+      - run:
+          name: Build Main Image
+          command: docker build -t firemindltd/base-install-docker-image:latest ./Main
+      - run:
+          name: Push
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker push firemindltd/base-install-docker-image:latest
+
+  buildNodeJSImage:
+    machine:
+      enabled: true
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - run:
+          name: Pull previous image
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker pull firemindltd/base-install-docker-image-nodejs:latest || true
+      - run:
+          name: Build NodeJS Image
+          command: docker build -t firemindltd/base-install-docker-image-nodejs:latest ./Node.JS
+      - run:
+          name: Push
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker push firemindltd/base-install-docker-image-nodejs:latest
+
+  buildRImage:
+    machine:
+      enabled: true
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - run:
+          name: Pull previous image
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker pull firemindltd/base-install-docker-image-r:latest || true
+      - run:
+          name: Build Image
+          command: docker build -t firemindltd/base-install-docker-image-r:latest ./R
+      - run:
+          name: Push
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker push firemindltd/base-install-docker-image-r:latest
+
+  buildTerraformImage:
+    machine:
+      enabled: true
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - run:
+          name: Pull previous image
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker pull firemindltd/base-install-docker-image-terraform:latest || true
+      - run:
+          name: Build Image
+          command: docker build -t firemindltd/base-install-docker-image-terraform:latest ./Terraform
+      - run:
+          name: Push
+          command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker push firemindltd/base-install-docker-image-terraform:latest
 
 workflows:
   version: 2
-  build-and-deploy:
+  commit:
     jobs:
-      - buildMainImage
+      - buildBaseImage
       - buildBrowserImage:
           requires:
-            - buildMainImage
+            - buildBaseImage
+      - buildMainImage:
+          requires:
+            - buildBaseImage
+      - buildNodeJSImage:
+          requires:
+            - buildBaseImage
+      - buildNodeRImage:
+          requires:
+            - buildBaseImage
+      - buildTerraformImage:
+          requires:
+            - buildBaseImage
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 3 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - buildBaseImage
+      - buildBrowserImage:
+          requires:
+            - buildBaseImage
+      - buildMainImage:
+          requires:
+            - buildBaseImage
+      - buildNodeJSImage:
+          requires:
+            - buildBaseImage
+      - buildNodeRImage:
+          requires:
+            - buildBaseImage
+      - buildTerraformImage:
+          requires:
+            - buildBaseImage

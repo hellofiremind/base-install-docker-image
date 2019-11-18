@@ -1,4 +1,4 @@
-FROM firemindltd/base-install-docker-image:latest
+FROM firemindltd/base-install-docker-image-base:latest
 
 # install java 8
 #
