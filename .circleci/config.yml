@@ -138,7 +138,8 @@ workflows:
     jobs:
       - buildBaseImage:
         filters:
-          only: master
+          branches:
+            only: master
       - buildBrowserImage:
           requires:
             - buildBaseImage
