@@ -1,4 +1,10 @@
 # Base Install Docker Image
 
-Contains Terraform, Node & NVM
-# base-install-docker-image
+Contains multiple images
+
+Base
+Browser
+Main
+Node.JS
+R
+Terraform
