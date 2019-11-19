@@ -149,7 +149,7 @@ workflows:
       - buildNodeJSImage:
           requires:
             - buildBaseImage
-      - buildNodeRImage:
+      - buildRImage:
           requires:
             - buildBaseImage
       - buildTerraformImage:
@@ -174,7 +174,7 @@ workflows:
       - buildNodeJSImage:
           requires:
             - buildBaseImage
-      - buildNodeRImage:
+      - buildRImage:
           requires:
             - buildBaseImage
       - buildTerraformImage:
