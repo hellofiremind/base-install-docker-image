@@ -21,29 +21,6 @@ jobs:
           command: |
                 echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
                 docker push firemindltd/base-install-docker-image-base:latest
-
-  buildBrowserImage:
-    machine:
-      enabled: true
-    shell: /bin/bash
-    environment:
-    working_directory: ~/firemind/base-docker-deploy
-    steps:
-      - checkout
-      - run:
-          name: Pull previous image
-          command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-                docker pull firemindltd/base-install-docker-image-browser:latest || true
-      - run:
-          name: Build Browser Image
-          command: docker build -t firemindltd/base-install-docker-image-browser:latest ./Browser
-      - run:
-          name: Push
-          command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-                docker push firemindltd/base-install-docker-image-browser:latest
-
   buildMainImage:
     machine:
       enabled: true
@@ -140,9 +117,6 @@ workflows:
           filters:
             branches:
               only: master
-      - buildBrowserImage:
-          requires:
-            - buildBaseImage
       - buildMainImage:
           requires:
             - buildBaseImage
@@ -165,9 +139,6 @@ workflows:
                 - master
     jobs:
       - buildBaseImage
-      - buildBrowserImage:
-          requires:
-            - buildBaseImage
       - buildMainImage:
           requires:
             - buildBaseImage
