@@ -1,4 +1,4 @@
-FROM ubuntu:19.04
+FROM ubuntu:20.04
 
 MAINTAINER Charles Gillham charles.gillham@firemind.io
 
