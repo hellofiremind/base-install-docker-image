@@ -4,7 +4,12 @@ FROM firemindltd/base-install-docker-image-base:latest
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get install -y nodejs
 
 # Install Terraform
-RUN wget "https://releases.hashicorp.com/terraform/$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')/terraform_$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')_linux_amd64.zip" &&\
+# RUN wget "https://releases.hashicorp.com/terraform/$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')/terraform_$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')_linux_amd64.zip" &&\
+#  unzip terraform_*.zip &&\
+#  mv terraform /usr/local/bin &&\
+#  rm terraform_*.zip
+
+RUN wget "https://releases.hashicorp.com/terraform/0.12.29/terraform_0.12.29_linux_amd64.zip" &&\
  unzip terraform_*.zip &&\
  mv terraform /usr/local/bin &&\
  rm terraform_*.zip
