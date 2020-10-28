@@ -12,6 +12,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
+          version: 19.03.13
           docker_layer_caching: true
       - run:
           name: Build Image
@@ -37,6 +38,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
+          version: 19.03.13
           docker_layer_caching: true
       - run:
           name: Build Image
@@ -63,6 +65,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
+          version: 19.03.13
           docker_layer_caching: true
       - run:
           name: Build Image
@@ -88,6 +91,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
+          version: 19.03.13
           docker_layer_caching: true
       - run:
           name: Build Image
@@ -114,6 +118,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
+          version: 19.03.13
           docker_layer_caching: true
       - run:
           name: Pull previous image
