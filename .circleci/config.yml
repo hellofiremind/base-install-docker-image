@@ -11,16 +11,26 @@ jobs:
       - run:
           name: Pull previous image
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker pull firemindltd/base-install-docker-image-base:latest || true
       - run:
           name: Build Image
-          command: docker build -t firemindltd/base-install-docker-image-base:latest ./Base
-      - run:
-          name: Push
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker build -t firemindltd/base-install-docker-image-base:latest ./Base
+                docker build -t firemindltd/base-install-docker-image-base:$(git log -1 --pretty=%h | cat) ./Base
+      - run:
+          name: Push (Dockerhub)
+          command: |
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker push firemindltd/base-install-docker-image-base:latest
+                docker push firemindltd/base-install-docker-image-base:$(git log -1 --pretty=%h | cat)
+      - run:
+          name: Push (AWS ECR)
+          command: |
+                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com
+                docker push firemindltd/base-install-docker-image-base:latest
+                docker push firemindltd/base-install-docker-image-base:$(git log -1 --pretty=%h | cat)
+              
   buildMainImage:
     machine:
       enabled: true
@@ -32,15 +42,15 @@ jobs:
       - run:
           name: Pull previous image
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker pull firemindltd/base-install-docker-image:latest || true
       - run:
           name: Build Main Image
           command: docker build -t firemindltd/base-install-docker-image:latest ./Main
       - run:
-          name: Push
+          name: Push (Dockerhub)
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker push firemindltd/base-install-docker-image:latest
 
   buildNodeJSImage:
@@ -54,15 +64,15 @@ jobs:
       - run:
           name: Pull previous image
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker pull firemindltd/base-install-docker-image-nodejs:latest || true
       - run:
           name: Build NodeJS Image
           command: docker build -t firemindltd/base-install-docker-image-nodejs:latest ./Node.JS
       - run:
-          name: Push
+          name: Push (Dockerhub)
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker push firemindltd/base-install-docker-image-nodejs:latest
 
   buildRImage:
@@ -76,15 +86,15 @@ jobs:
       - run:
           name: Pull previous image
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker pull firemindltd/base-install-docker-image-r:latest || true
       - run:
           name: Build Image
           command: docker build -t firemindltd/base-install-docker-image-r:latest ./R
       - run:
-          name: Push
+          name: Push (Dockerhub)
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker push firemindltd/base-install-docker-image-r:latest
 
   buildTerraformImage:
@@ -98,15 +108,15 @@ jobs:
       - run:
           name: Pull previous image
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker pull firemindltd/base-install-docker-image-terraform:latest || true
       - run:
           name: Build Image
           command: docker build -t firemindltd/base-install-docker-image-terraform:latest ./Terraform
       - run:
-          name: Push
+          name: Push (Dockerhub)
           command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
                 docker push firemindltd/base-install-docker-image-terraform:latest
 
 workflows:
@@ -114,20 +124,30 @@ workflows:
   commit:
     jobs:
       - buildBaseImage:
+          context:
+            - firemind-docker-images
           filters:
             branches:
               only: master
       - buildMainImage:
-          requires:
+        context:
+          - firemind-docker-images  
+        requires:
             - buildBaseImage
       - buildNodeJSImage:
-          requires:
+        context:
+          - firemind-docker-images  
+        requires:
             - buildBaseImage
       - buildRImage:
-          requires:
+        context:
+          - firemind-docker-images  
+        requires:
             - buildBaseImage
       - buildTerraformImage:
-          requires:
+        context:
+          - firemind-docker-images  
+        requires:
             - buildBaseImage
   nightly:
     triggers:
@@ -138,16 +158,26 @@ workflows:
               only:
                 - master
     jobs:
-      - buildBaseImage
+      - buildBaseImage:
+          context:
+            - firemind-docker-images
       - buildMainImage:
+          context:
+            - firemind-docker-images
           requires:
             - buildBaseImage
       - buildNodeJSImage:
+          context:
+            - firemind-docker-images
           requires:
             - buildBaseImage
       - buildRImage:
+          context:
+            - firemind-docker-images
           requires:
             - buildBaseImage
       - buildTerraformImage:
+          context:
+            - firemind-docker-images
           requires:
             - buildBaseImage
