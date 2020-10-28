@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Push (AWS ECR)
           command: |
-                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com
+                aws ecr get-login --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com
                 docker push firemindltd/base-install-docker-image-base:latest
                 docker push firemindltd/base-install-docker-image-base:$(git log -1 --pretty=%h | cat)
               
