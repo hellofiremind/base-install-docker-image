@@ -130,25 +130,25 @@ workflows:
             branches:
               only: master
       - buildMainImage:
-        context:
-          - firemind-docker-images  
-        requires:
-            - buildBaseImage
+          context:
+            - firemind-docker-images  
+          requires:
+              - buildBaseImage
       - buildNodeJSImage:
-        context:
-          - firemind-docker-images  
-        requires:
-            - buildBaseImage
+          context:
+            - firemind-docker-images  
+          requires:
+              - buildBaseImage
       - buildRImage:
-        context:
-          - firemind-docker-images  
-        requires:
-            - buildBaseImage
+          context:
+            - firemind-docker-images  
+          requires:
+              - buildBaseImage
       - buildTerraformImage:
-        context:
-          - firemind-docker-images  
-        requires:
-            - buildBaseImage
+          context:
+            - firemind-docker-images  
+          requires:
+              - buildBaseImage
   nightly:
     triggers:
       - schedule:
