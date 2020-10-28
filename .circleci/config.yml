@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   buildBaseImage:
     docker:
-      - image: docker:stable-dind
+      - image: cimg/base:2020.10
         auth:
           username: $FIREMIND_DOCKER_HUB_USER
           password: $FIREMIND_DOCKER_HUB_PASSWORD
@@ -27,7 +27,7 @@ jobs:
               
   buildMainImage:
     docker:
-      - image: docker:stable-dind
+      - image: cimg/base:2020.10
         auth:
           username: $FIREMIND_DOCKER_HUB_USER
           password: $FIREMIND_DOCKER_HUB_PASSWORD
@@ -53,7 +53,7 @@ jobs:
                 
   buildNodeJSImage:
     docker:
-      - image: docker:stable-dind
+      - image: cimg/base:2020.10
         auth:
           username: $FIREMIND_DOCKER_HUB_USER
           password: $FIREMIND_DOCKER_HUB_PASSWORD
@@ -78,7 +78,7 @@ jobs:
 
   buildRImage:
     docker:
-      - image: docker:stable-dind
+      - image: cimg/base:2020.10
         auth:
           username: $FIREMIND_DOCKER_HUB_USER
           password: $FIREMIND_DOCKER_HUB_PASSWORD
@@ -104,7 +104,7 @@ jobs:
 
   buildTerraformImage:
     docker:
-      - image: docker:stable-dind
+      - image: cimg/base:2020.10
         auth:
           username: $FIREMIND_DOCKER_HUB_USER
           password: $FIREMIND_DOCKER_HUB_PASSWORD
