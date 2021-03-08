@@ -14,7 +14,9 @@ RUN apt-get update -y && apt-get -y install default-jdk python2.7-dev python3.8-
 ### Cloud SDK's
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-sdk -y
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-RUN pip3 install awscli
+
+RUN cd /tmp && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && ./aws/install && rm -f awscliv2.zip && rm -rf aws
+COPY ./aws/config /root/.aws/config
 
 CMD ["/bin/bash"]
 
