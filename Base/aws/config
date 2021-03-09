@@ -5,6 +5,5 @@ s3 =
     use_dualstack_endpoint = true
     payload_signing_enabled = true
     use_dualstack_endpoint = true
-    max_queue_size = true
 output = json
 cli_pager =
