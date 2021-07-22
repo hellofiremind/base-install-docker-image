@@ -1,0 +1,201 @@
+version: 2.0
+jobs:
+  buildBaseImage:
+    docker:
+      - image: cimg/base:2020.10
+        auth:
+          username: $FIREMIND_DOCKER_HUB_USER
+          password: $FIREMIND_DOCKER_HUB_PASSWORD
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run:
+          name: Build Image
+          command: |
+                docker build -t firemindltd/base-install-docker-image-base:latest ./Base
+                docker build -t firemindltd/base-install-docker-image-base:$(git log -1 --pretty=%h | cat) ./Base
+      - run:
+          name: Push (Dockerhub)
+          command: |
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
+                docker push firemindltd/base-install-docker-image-base:latest
+                docker push firemindltd/base-install-docker-image-base:$(git log -1 --pretty=%h | cat)
+              
+  buildMainImage:
+    docker:
+      - image: cimg/base:2020.10
+        auth:
+          username: $FIREMIND_DOCKER_HUB_USER
+          password: $FIREMIND_DOCKER_HUB_PASSWORD
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run:
+          name: Build Image
+          command: |
+                docker build -t firemindltd/base-install-docker-image:latest ./Main
+                docker build -t firemindltd/base-install-docker-image:$(git log -1 --pretty=%h | cat) ./Main
+      - run:
+          name: Push (Dockerhub)
+          command: |
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
+                docker push firemindltd/base-install-docker-image:latest
+                docker push firemindltd/base-install-docker-image:$(git log -1 --pretty=%h | cat)
+
+                
+  buildNodeJSImage:
+    docker:
+      - image: cimg/base:2020.10
+        auth:
+          username: $FIREMIND_DOCKER_HUB_USER
+          password: $FIREMIND_DOCKER_HUB_PASSWORD
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run:
+          name: Build Image
+          command: |
+                docker build -t firemindltd/base-install-docker-image-nodejs:latest ./Node.JS
+                docker build -t firemindltd/base-install-docker-image-nodejs:$(git log -1 --pretty=%h | cat) ./Node.JS
+      - run:
+          name: Push (Dockerhub)
+          command: |
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
+                docker push firemindltd/base-install-docker-image-nodejs:latest
+                docker push firemindltd/base-install-docker-image-nodejs:$(git log -1 --pretty=%h | cat)
+
+  buildRImage:
+    docker:
+      - image: cimg/base:2020.10
+        auth:
+          username: $FIREMIND_DOCKER_HUB_USER
+          password: $FIREMIND_DOCKER_HUB_PASSWORD
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run:
+          name: Build Image
+          command: |
+                docker build -t firemindltd/base-install-docker-image-r:latest ./R
+                docker build -t firemindltd/base-install-docker-image-r:$(git log -1 --pretty=%h | cat) ./R
+      - run:
+          name: Push (Dockerhub)
+          command: |
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
+                docker push firemindltd/base-install-docker-image-r:latest
+                docker push firemindltd/base-install-docker-image-r:$(git log -1 --pretty=%h | cat)
+
+
+  buildTerraformImage:
+    docker:
+      - image: cimg/base:2020.10
+        auth:
+          username: $FIREMIND_DOCKER_HUB_USER
+          password: $FIREMIND_DOCKER_HUB_PASSWORD
+    shell: /bin/bash
+    environment:
+    working_directory: ~/firemind/base-docker-deploy
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run:
+          name: Pull previous image
+          command: |
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
+                docker pull firemindltd/base-install-docker-image-terraform:latest || true
+      - run:
+          name: Build Image
+          command: |
+                docker build -t firemindltd/base-install-docker-image-terraform:latest ./Terraform
+                docker build -t firemindltd/base-install-docker-image-terraform:$(git log -1 --pretty=%h | cat) ./Terraform
+      - run:
+          name: Push (Dockerhub)
+          command: |
+                echo "$FIREMIND_DOCKER_HUB_PASSWORD" | docker login -u "$FIREMIND_DOCKER_HUB_USER" --password-stdin
+                docker push firemindltd/base-install-docker-image-terraform:latest
+                docker push firemindltd/base-install-docker-image-terraform:$(git log -1 --pretty=%h | cat)
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - buildBaseImage:
+          context:
+            - firemind-docker-images
+          filters:
+            branches:
+              only: master
+      - buildMainImage:
+          context:
+            - firemind-docker-images  
+          requires:
+              - buildBaseImage
+      - buildNodeJSImage:
+          context:
+            - firemind-docker-images  
+          requires:
+              - buildBaseImage
+      - buildRImage:
+          context:
+            - firemind-docker-images  
+          requires:
+              - buildBaseImage
+      - buildTerraformImage:
+          context:
+            - firemind-docker-images  
+          requires:
+              - buildBaseImage
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 3 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - buildBaseImage:
+          context:
+            - firemind-docker-images
+      - buildMainImage:
+          context:
+            - firemind-docker-images
+          requires:
+            - buildBaseImage
+      - buildNodeJSImage:
+          context:
+            - firemind-docker-images
+          requires:
+            - buildBaseImage
+      - buildRImage:
+          context:
+            - firemind-docker-images
+          requires:
+            - buildBaseImage
+      - buildTerraformImage:
+          context:
+            - firemind-docker-images
+          requires:
+            - buildBaseImage
