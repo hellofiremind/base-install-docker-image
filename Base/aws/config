@@ -4,6 +4,5 @@ s3 =
     max_concurrent_requests = 100
     use_dualstack_endpoint = true
     payload_signing_enabled = true
-    use_dualstack_endpoint = true
 output = json
 cli_pager =
